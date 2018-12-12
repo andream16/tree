@@ -4,11 +4,15 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 )
 
-var errReadingFilesInDir = errors.New("read_files_in_dir")
+var (
+	errPath    = errors.New("path")
+	errPackage = errors.New("package")
+)
 
 // GoFilesDirs contains useful files
 type GoFilesDirs struct {
@@ -16,37 +20,58 @@ type GoFilesDirs struct {
 	dirs    []string
 }
 
-// FilesByDir returns all go files in the repository by directory name
-func FilesByDir(dir string, dirGoFiles map[string]*GoFilesDirs) (map[string]*GoFilesDirs, error) {
+// Package represents a package (directory) that can contain other sub-packages.
+// Can be intended as a node.
+type Package struct {
+	name        string
+	subPackages []*Package
+	goFiles     []GoFile
+}
 
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return nil, errors.Wrapf(errReadingFilesInDir, "unable to read files in %s directory", dir)
+// GoFile represents a go file.GoFile
+// Can be intended as a leaf.
+type GoFile string
+
+// FilesByDir returns all go files in the repository by directory name
+func FilesByDir(path string, pkg *Package) (*Package, error) {
+
+	if err := validate(path, pkg); err != nil {
+		return nil, err
 	}
+
+	files, err := ioutil.ReadDir("./" + path)
+	if err != nil {
+		return nil, err
+	}
+
+	pkg.name = pathPostfix(path)
 
 	if len(files) > 0 {
-		goFilesDirs := filterGoFilesDirs(files)
-		if len(goFilesDirs.goFiles) > 0 || len(goFilesDirs.dirs) > 0 {
-			dirGoFiles[dir] = goFilesDirs
-		}
-		if len(goFilesDirs.dirs) > 0 {
-			for _, dirName := range goFilesDirs.dirs {
-				return FilesByDir(dir+"/"+dirName, dirGoFiles)
+
+		subPackages, goFiles := filterGoFilesDirs(files)
+		for _, p := range subPackages {
+			sPkg, err := FilesByDir(path+"/"+p.name, p)
+			if err != nil {
+				return nil, err
 			}
+			pkg.subPackages = append(pkg.subPackages, sPkg)
 		}
+
+		pkg.goFiles = goFiles
+
 	}
 
-	return dirGoFiles, nil
+	return pkg, nil
 
 }
 
-func filterGoFilesDirs(files []os.FileInfo) *GoFilesDirs {
+func filterGoFilesDirs(files []os.FileInfo) ([]*Package, []GoFile) {
 
 	const goExt = ".go"
 
 	var (
-		goFiles []string
-		dirs    []string
+		goFiles []GoFile
+		pkgs    []*Package
 	)
 
 	for _, file := range files {
@@ -54,16 +79,32 @@ func filterGoFilesDirs(files []os.FileInfo) *GoFilesDirs {
 		fileName := file.Name()
 
 		if filepath.Ext(fileName) == goExt {
-			goFiles = append(goFiles, fileName)
+			goFiles = append(goFiles, GoFile(fileName))
 		} else if file.IsDir() {
-			dirs = append(dirs, fileName)
+			pkgs = append(pkgs, &Package{name: fileName})
 		}
 
 	}
 
-	return &GoFilesDirs{
-		goFiles: goFiles,
-		dirs:    dirs,
+	return pkgs, goFiles
+
+}
+
+func pathPostfix(path string) string {
+	s := strings.Split(path, "/")
+	return s[len(s)-1]
+}
+
+func validate(path string, pkg *Package) error {
+
+	if pkg == nil {
+		return errors.Wrap(errPackage, "initial Package can't be nil")
 	}
+
+	if path == "" {
+		return errors.Wrap(errPath, "empty path")
+	}
+
+	return nil
 
 }

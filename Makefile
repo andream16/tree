@@ -1,12 +1,14 @@
-PROJECT?=advisor
+PROJECT?=adviser
+BINPATH?= bin/$(PROJECT)
 
-default: build
+default: 
+	build
+		./$(BINPATH)
 
-# Build
 build: 
-	go build -o bin/$(PROJECT) -v
+	go build -o $(BINPATH) -v
 
 # Test
 test: go test ./...
 test-verbose: go test -v ./...
-test-cover: go cover ./...
+test-cover: go test -cover ./...
