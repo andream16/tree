@@ -6,7 +6,7 @@ import (
 
 func main() {
 
-	out, err := fileutil.FilesByDir("example", new(fileutil.Package))
+	out, err := fileutil.FilesByDir("examples", new(fileutil.Package))
 	if err != nil {
 		panic(err)
 	}
