@@ -49,17 +49,17 @@ func TestFilesByDir(t *testing.T) {
 		require.Equal(
 			t,
 			&Package{
-				name: "testdata",
-				subPackages: []*Package{
+				Name: "testdata",
+				SubPackages: []*Package{
 					&Package{
-						name: "somedir",
-						goFiles: []GoFile{
+						Name: "somedir",
+						GoFiles: []GoFile{
 							"somefile.go",
 							"someotherfile.go",
 						},
 					},
 				},
-				goFiles: []GoFile{
+				GoFiles: []GoFile{
 					"somefile.go",
 				},
 			},

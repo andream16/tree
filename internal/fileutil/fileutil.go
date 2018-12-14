@@ -23,9 +23,9 @@ type GoFilesDirs struct {
 // Package represents a package (directory) that can contain other sub-packages.
 // Can be intended as a node.
 type Package struct {
-	name        string
-	subPackages []*Package
-	goFiles     []GoFile
+	Name        string
+	SubPackages []*Package
+	GoFiles     []GoFile
 }
 
 // GoFile represents a go file.GoFile
@@ -44,20 +44,20 @@ func FilesByDir(path string, pkg *Package) (*Package, error) {
 		return nil, err
 	}
 
-	pkg.name = pathPostfix(path)
+	pkg.Name = pathPostfix(path)
 
 	if len(files) > 0 {
 
 		subPackages, goFiles := filterGoFilesDirs(files)
 		for _, p := range subPackages {
-			sPkg, err := FilesByDir(path+"/"+p.name, p)
+			sPkg, err := FilesByDir(path+"/"+p.Name, p)
 			if err != nil {
 				return nil, err
 			}
-			pkg.subPackages = append(pkg.subPackages, sPkg)
+			pkg.SubPackages = append(pkg.SubPackages, sPkg)
 		}
 
-		pkg.goFiles = goFiles
+		pkg.GoFiles = goFiles
 
 	}
 
@@ -81,7 +81,7 @@ func filterGoFilesDirs(files []os.FileInfo) ([]*Package, []GoFile) {
 		if filepath.Ext(fileName) == goExt {
 			goFiles = append(goFiles, GoFile(fileName))
 		} else if file.IsDir() {
-			pkgs = append(pkgs, &Package{name: fileName})
+			pkgs = append(pkgs, &Package{Name: fileName})
 		}
 
 	}
