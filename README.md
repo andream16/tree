@@ -1,2 +1,2 @@
-# adviser
-Unexport code that can be unexported with a command
+# tree
+Simple go project to tree structure. It supports only go files.

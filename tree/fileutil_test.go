@@ -1,4 +1,4 @@
-package fileutil
+package tree
 
 import (
 	"os"
@@ -8,22 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFilesByDir(t *testing.T) {
+func TestGet(t *testing.T) {
 
-	inPkg := new(Package)
+	inPkg := new(Node)
 
-	t.Run("should fail because Package is nil", func(t *testing.T) {
+	t.Run("should fail because Node is nil", func(t *testing.T) {
 
-		out, err := FilesByDir("", nil)
+		out, err := Get("", nil)
 
-		require.Equal(t, errPackage, errors.Cause(err))
+		require.Equal(t, errNode, errors.Cause(err))
 		require.Nil(t, out)
 
 	})
 
 	t.Run("should fail because path is empty", func(t *testing.T) {
 
-		out, err := FilesByDir("", inPkg)
+		out, err := Get("", inPkg)
 
 		require.Equal(t, errPath, errors.Cause(err))
 		require.Nil(t, out)
@@ -32,7 +32,7 @@ func TestFilesByDir(t *testing.T) {
 
 	t.Run("should fail because path is not found", func(t *testing.T) {
 
-		out, err := FilesByDir("somePath", inPkg)
+		out, err := Get("somePath", inPkg)
 
 		_, ok := err.(*os.PathError)
 
@@ -43,23 +43,23 @@ func TestFilesByDir(t *testing.T) {
 
 	t.Run("should return expected result", func(t *testing.T) {
 
-		out, err := FilesByDir("testdata", inPkg)
+		out, err := Get("testdata", inPkg)
 
 		require.NoError(t, err)
 		require.Equal(
 			t,
-			&Package{
+			&Node{
 				Name: "testdata",
-				SubPackages: []*Package{
-					&Package{
+				Nodes: []*Node{
+					&Node{
 						Name: "somedir",
-						GoFiles: []GoFile{
+						Leafs: []Leaf{
 							"somefile.go",
 							"someotherfile.go",
 						},
 					},
 				},
-				GoFiles: []GoFile{
+				Leafs: []Leaf{
 					"somefile.go",
 				},
 			},
