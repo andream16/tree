@@ -1,8 +1,7 @@
-module github.com/andream16/adviser
+module github.com/andream16/tree
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/andream16/adviser v0.0.0-20181216221555-ba4ed01f05c0 // indirect
 	github.com/pkg/errors v0.8.0
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2
 )
