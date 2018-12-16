@@ -28,3 +28,5 @@ func main() {
 
 }
 ```
+
+**Todo get AST per each file.**
