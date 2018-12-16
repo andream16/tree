@@ -3,11 +3,7 @@ Simple go project to tree structure. It supports only go files.
 
 # ???
 
-Given:
-
 ![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/structure.png)
-
-By Running:
 
 ```
 package main
