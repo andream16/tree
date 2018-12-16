@@ -13,9 +13,9 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(out.Name)                    // example
+	fmt.Println(out.Name)                      // example
 	fmt.Println(out.Files[0])                // somefile.go
-	fmt.Println(out.SubPackages[0].Name)     // subexample
-	fmt.Println(out.SubPackages[0].Files[0]) // someotherfile.go
+	fmt.Println(out.SubPackages[0].Name)       // subexample
+	fmt.Println(out.SubPackages[0].Leafs[0]) // someotherfile.go
 
 }
