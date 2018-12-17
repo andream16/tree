@@ -16,7 +16,6 @@ jobs:
             - go-mod-v1-{{ checksum "go.sum" }}
 
       - run:
-
           command: |
             make test | tee ${TEST_RESULTS}/go-test.out
 
@@ -26,11 +25,6 @@ jobs:
           key: go-mod-v1-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-
-      - run:
-          name: Start service
-          command: ./bin/tree
-          background: true
 
       - store_artifacts:
           path: /tmp/test-results
