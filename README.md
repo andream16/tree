@@ -1,4 +1,4 @@
-# tree
+# tree [![CircleCI](https://circleci.com/gh/AndreaM16/tree/tree/master.svg?style=svg)](https://circleci.com/gh/AndreaM16/tree/tree/master)
 Simple go project to tree structure. It supports only go files.
 
 # ???
