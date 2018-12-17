@@ -1,6 +1,4 @@
-github.com/andream16/adviser v0.0.0-20181216221555-ba4ed01f05c0 h1:MVywKYUJeUzh2u+srSuENBuNAs4cSsQNumG1plN3Bpo=
-github.com/andream16/adviser v0.0.0-20181216221555-ba4ed01f05c0/go.mod h1:rrs+K55XRYoqnTvsDB6UJKKvRzH7hdgMS6KGux4WGoc=
-github.com/andream16/tree v0.0.0-20181216221555-ba4ed01f05c0 h1:qqCeAV384VfXh697SU/54qOC9MApugo/6K6Uv1jPjZU=
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

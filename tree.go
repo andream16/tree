@@ -15,10 +15,9 @@ var (
 	errNode = errors.New("node")
 )
 
-// Records contains useful files
-type Records struct {
-	files []string
-	dirs  []string
+// Getter allows third party mocking
+type Getter interface {
+	Get(string, *Node) (*Node, error)
 }
 
 // Node represents a package (directory) that can contain other sub-packages.
@@ -31,7 +30,7 @@ type Node struct {
 // Leaf represents a go file.
 type Leaf string
 
-type nodeErr struct {
+type result struct {
 	node *Node
 	err  error
 }
@@ -48,57 +47,57 @@ func Get(path string, node *Node) (*Node, error) {
 		return nil, err
 	}
 
-	node.Name = pathPostfix(path)
+	node.Name = currentPackage(path)
 
-	if len(files) > 0 {
-
-		var (
-			wg       sync.WaitGroup
-			results  = make(chan *nodeErr)
-			done     = make(chan struct{})
-			nodeErrs []*nodeErr
-		)
-
-		go func() {
-			for v := range results {
-				nodeErrs = append(nodeErrs, v)
-			}
-
-			done <- struct{}{}
-		}()
-
-		nodes, leafs := filterGoFilesDirs(files)
-
-		wg.Add(len(nodes))
-
-		for _, v := range nodes {
-			go func(n *Node) {
-				defer wg.Done()
-
-				nodeErr := &nodeErr{}
-
-				nodeErr.node, nodeErr.err = Get(path+"/"+n.Name, n)
-
-				results <- nodeErr
-
-			}(v)
-		}
-
-		wg.Wait()
-		close(results)
-
-		<-done
-
-		for _, n := range nodeErrs {
-			if n.err != nil {
-				return nil, n.err
-			}
-			node.Nodes = append(node.Nodes, n.node)
-		}
-
-		node.Leafs = leafs
-
+	if len(files) == 0 {
+		return node, nil
 	}
+
+	var (
+		wg        sync.WaitGroup
+		resultsCh = make(chan *result)
+		done      = make(chan struct{})
+		results   []*result
+	)
+
+	go func() {
+		for v := range resultsCh {
+			results = append(results, v)
+		}
+
+		done <- struct{}{}
+	}()
+
+	nodes, leafs := filterGoFilesDirs(files)
+
+	wg.Add(len(nodes))
+
+	for _, v := range nodes {
+		go func(n *Node) {
+			defer wg.Done()
+
+			result := &result{}
+
+			result.node, result.err = Get(path+"/"+n.Name, n)
+
+			resultsCh <- result
+
+		}(v)
+	}
+
+	wg.Wait()
+	close(resultsCh)
+
+	<-done
+
+	for _, n := range results {
+		if n.err != nil {
+			return nil, n.err
+		}
+		node.Nodes = append(node.Nodes, n.node)
+	}
+
+	node.Leafs = leafs
 
 	return node, nil
 
@@ -129,7 +128,7 @@ func filterGoFilesDirs(files []os.FileInfo) ([]*Node, []Leaf) {
 
 }
 
-func pathPostfix(path string) string {
+func currentPackage(path string) string {
 	i := strings.IndexByte(path, '/')
 
 	if i == -1 {
@@ -142,7 +141,7 @@ func pathPostfix(path string) string {
 func validate(path string, node *Node) error {
 
 	if node == nil {
-		return errors.Wrap(errNode, "initial node can't be nil")
+		return errors.Wrap(errNode, "node can't be nil")
 	}
 
 	if path == "" {
