@@ -3,11 +3,7 @@ Simple go project to tree structure. It supports only go files.
 
 # ???
 
-Given:
-
-![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/example_structure.png)
-
-By Running:
+![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/structure.png)
 
 ```
 package main
@@ -32,3 +28,5 @@ func main() {
 
 }
 ```
+
+**Todo get AST per each file.**
