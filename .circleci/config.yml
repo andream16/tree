@@ -1,0 +1,45 @@
+version: 2 # use CircleCI 2.0
+jobs: # basic units of work in a run
+  build: # runs not using Workflows must have a `build` job as entry point
+    docker: # run the steps with Docker
+      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+      - image: circleci/golang:1.11
+
+    # directory where steps are run. Path must conform to the Go Workspace requirements
+    working_directory: /tree
+
+    environment: # environment variables for the build itself
+      TEST_RESULTS: /tmp/test-results # path to where test results will be saved
+
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory
+      - run: mkdir -p $TEST_RESULTS # create the test results directory
+
+      - restore_cache: # restores saved cache if no changes are detected since last run
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+
+      - run:
+
+          # store the results of our tests in the $TEST_RESULTS directory
+          command: |
+            make test | tee ${TEST_RESULTS}/go-test.out
+
+      - run: make # pull and build dependencies for the project
+
+      - save_cache: # store cache in the /go/pkg directory
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
+      - run:
+          name: Start service
+          command: ./bin/tree
+          background: true # keep service running and proceed to next step
+
+      - store_artifacts: # upload test summary for display in Artifacts
+          path: /tmp/test-results
+          destination: raw-test-output
+
+      - store_test_results: # upload test results for display in Test Summary
+          path: /tmp/test-results
