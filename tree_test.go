@@ -54,17 +54,63 @@ func TestGet(t *testing.T) {
 					&Node{
 						Name: "somedir",
 						Leafs: []Leaf{
-							"somefile.go",
-							"someotherfile.go",
+							{
+								Name: "somefile.go",
+								Path: "testdata/somedir/somefile.go",
+							}, {
+								Path: "testdata/somedir/someotherfile.go",
+								Name: "someotherfile.go",
+							},
 						},
 					},
 				},
 				Leafs: []Leaf{
-					"somefile.go",
+					{
+						Name: "somefile.go",
+						Path: "testdata/somefile.go",
+					},
 				},
 			},
 			out,
 		)
+
+	})
+
+}
+
+func TestLeaf_Tree(t *testing.T) {
+
+	t.Run("should fail because file hasn't been found", func(t *testing.T) {
+
+		l := &Leaf{}
+
+		err := l.Ast()
+
+		require.True(t, os.IsNotExist(err))
+
+	})
+
+	t.Run("should return early because file is empty", func(t *testing.T) {
+
+		l := &Leaf{
+			Path: "testdata/somedir/somefile.go",
+		}
+
+		err := l.Ast()
+
+		require.NoError(t, err)
+
+	})
+
+	t.Run("should return a valid syntax tree", func(t *testing.T) {
+
+		l := &Leaf{
+			Path: "testdata/somefile.go",
+		}
+
+		err := l.Ast()
+
+		require.NoError(t, err)
 
 	})
 

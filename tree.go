@@ -1,6 +1,9 @@
 package tree
 
 import (
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -10,14 +13,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+const goExt = ".go"
+
 var (
 	errPath = errors.New("path")
 	errNode = errors.New("node")
 )
 
-// Getter allows third party mocking
-type Getter interface {
+// Treer allows third party mocking
+type Treer interface {
 	Get(string, *Node) (*Node, error)
+	Ast(*Leaf) error
 }
 
 // Node represents a package (directory) that can contain other sub-packages.
@@ -28,7 +34,11 @@ type Node struct {
 }
 
 // Leaf represents a go file.
-type Leaf string
+type Leaf struct {
+	Name       string
+	Path       string
+	SyntaxTree *ast.File
+}
 
 type result struct {
 	node *Node
@@ -97,15 +107,41 @@ func Get(path string, node *Node) (*Node, error) {
 		node.Nodes = append(node.Nodes, n.node)
 	}
 
-	node.Leafs = leafs
+	for _, v := range leafs {
+
+		v.Path = path + "/" + v.Name
+
+		node.Leafs = append(node.Leafs, v)
+	}
 
 	return node, nil
 
 }
 
-func filterGoFilesDirs(files []os.FileInfo) ([]*Node, []Leaf) {
+// Ast sets leaf's SyntaxTree
+func (l *Leaf) Ast() error {
 
-	const goExt = ".go"
+	b, err := ioutil.ReadFile(l.Path)
+	if err != nil {
+		return err
+	}
+	if len(b) == 0 {
+		return nil
+	}
+
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, l.Name+goExt, string(b), 0)
+	if err != nil {
+		return err
+	}
+
+	l.SyntaxTree = f
+
+	return nil
+
+}
+
+func filterGoFilesDirs(files []os.FileInfo) ([]*Node, []Leaf) {
 
 	var (
 		leafs []Leaf
@@ -117,7 +153,7 @@ func filterGoFilesDirs(files []os.FileInfo) ([]*Node, []Leaf) {
 		fileName := file.Name()
 
 		if filepath.Ext(fileName) == goExt {
-			leafs = append(leafs, Leaf(fileName))
+			leafs = append(leafs, Leaf{Name: fileName})
 		} else if file.IsDir() {
 			nodes = append(nodes, &Node{Name: fileName})
 		}
