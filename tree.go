@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -138,6 +139,21 @@ func (l *Leaf) Ast() error {
 	l.SyntaxTree = f
 
 	return nil
+
+}
+
+// Print pretty prints go project structure
+func (n *Node) Print() {
+
+	fmt.Print(n.Name + "\n|")
+
+	for _, l := range n.Leafs {
+		fmt.Println("\t" + l.Name)
+	}
+
+	for _, v := range n.Nodes {
+		v.Print()
+	}
 
 }
 

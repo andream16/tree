@@ -40,4 +40,10 @@ func main() {
 		return true
 	})
 
+	// example
+	// |       somefile.go
+	// example/subexample
+	// |       someotherfile.go
+	out.Print()
+
 }
