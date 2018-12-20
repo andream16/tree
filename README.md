@@ -7,6 +7,15 @@ Simple go project to tree structure. It supports only go files.
 ![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/structure.png)
 
 ```
+package main
+
+import (
+	"fmt"
+	"go/ast"
+
+	"github.com/andream16/tree"
+)
+
 func main() {
 
 	out, err := tree.Get("examples/example", &tree.Node{})
@@ -39,6 +48,12 @@ func main() {
 		}
 		return true
 	})
+
+	// example
+	// |       somefile.go
+	// example/subexample
+	// |       someotherfile.go
+	out.Print()
 
 }
 ```
