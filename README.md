@@ -1,4 +1,4 @@
-# tree [![CircleCI](https://circleci.com/gh/AndreaM16/tree/tree/master.svg?style=svg)](https://circleci.com/gh/AndreaM16/tree/tree/master) [![GoDoc](https://godoc.org/github.com/AndreaM16/tree?status.svg)] [![Go Report Card](https://goreportcard.com/badge/github.com/AndreaM16/tree)](https://goreportcard.com/report/github.com/AndreaM16/tree) [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
+# tree [![CircleCI](https://circleci.com/gh/AndreaM16/tree/tree/master.svg?style=svg)](https://circleci.com/gh/AndreaM16/tree/tree/master) [![GoDoc](https://godoc.org/github.com/AndreaM16/tree?status.svg)](https://godoc.org/github.com/AndreaM16/tree) [![Go Report Card](https://goreportcard.com/badge/github.com/AndreaM16/tree)](https://goreportcard.com/report/github.com/AndreaM16/tree) [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
 
 Simple go project to tree structure. It supports only go files.
 
