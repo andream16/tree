@@ -1,10 +1,10 @@
 package tree
 
 import (
+	"errors"
 	"os"
 	"testing"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,7 +16,7 @@ func TestGet(t *testing.T) {
 
 		out, err := Get("", nil)
 
-		require.Equal(t, errNode, errors.Cause(err))
+		require.True(t, errors.Is(err, errNode))
 		require.Nil(t, out)
 
 	})
@@ -25,7 +25,7 @@ func TestGet(t *testing.T) {
 
 		out, err := Get("", inPkg)
 
-		require.Equal(t, errPath, errors.Cause(err))
+		require.True(t, errors.Is(err, errPath))
 		require.Nil(t, out)
 
 	})

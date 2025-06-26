@@ -1,17 +1,15 @@
 package tree
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
-
-	"github.com/pkg/errors"
 )
 
 const goExt = ".go"
@@ -53,7 +51,7 @@ func Get(path string, node *Node) (*Node, error) {
 		return nil, err
 	}
 
-	files, err := ioutil.ReadDir("./" + path)
+	files, err := os.ReadDir("./" + path)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +120,7 @@ func Get(path string, node *Node) (*Node, error) {
 // Ast sets leaf's SyntaxTree
 func (l *Leaf) Ast() error {
 
-	b, err := ioutil.ReadFile(l.Path)
+	b, err := os.ReadFile(l.Path)
 	if err != nil {
 		return err
 	}
@@ -157,7 +155,7 @@ func (n *Node) Print() {
 
 }
 
-func filterGoFilesDirs(files []os.FileInfo) ([]*Node, []Leaf) {
+func filterGoFilesDirs(files []os.DirEntry) ([]*Node, []Leaf) {
 
 	var (
 		leafs []Leaf
@@ -193,11 +191,11 @@ func currentPackage(path string) string {
 func validate(path string, node *Node) error {
 
 	if node == nil {
-		return errors.Wrap(errNode, "node can't be nil")
+		return fmt.Errorf("node can't be nil: %w", errNode)
 	}
 
 	if path == "" {
-		return errors.Wrap(errPath, "empty path")
+		return fmt.Errorf("empty path: %w", errPath)
 	}
 
 	return nil
