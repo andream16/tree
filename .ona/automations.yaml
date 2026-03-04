@@ -1,0 +1,25 @@
+tasks:
+  install-deps:
+    name: Install dependencies
+    description: Download Go module dependencies.
+    command: go mod download
+    triggeredBy:
+      - postDevcontainerStart
+
+  build:
+    name: Build
+    description: Compile the project to bin/tree.
+    command: make build
+    triggeredBy:
+      - manual
+    dependsOn:
+      - install-deps
+
+  test:
+    name: Test
+    description: Run all tests with race detection and coverage.
+    command: make test
+    triggeredBy:
+      - manual
+    dependsOn:
+      - install-deps
