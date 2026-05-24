@@ -1,26 +1,10 @@
-# tree [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
-
-Scala project to tree structure. It supports only Scala files.
-
-## Usage
-
-Add the dependency to your `build.sbt`:
-
-```scala
-libraryDependencies += "com.github.andream16" %% "tree" % "0.1.0"
-```
-
-## Example
-
-```scala
 package example
 
-import tree.*
+import tree.{Tree as ScalaTree, *}
 import scala.meta.*
 
 @main def run(): Unit =
-
-  val result = Tree.get("examples/example", Some(Node()))
+  val result = ScalaTree.get("examples/example", Some(Node()))
   result match
     case Left(err) =>
       throw new RuntimeException(err.message)
@@ -45,27 +29,4 @@ import scala.meta.*
           }
 
       // Pretty print the tree structure
-      // example
-      // |       somefile.scala
-      // example/subexample
-      // |       someotherfile.scala
-      out.print()
-```
-
-## Build
-
-```bash
-sbt compile
-```
-
-## Test
-
-```bash
-sbt test
-```
-
-## Run Example
-
-```bash
-sbt "runMain example.run"
-```
+      out.printTree()

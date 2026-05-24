@@ -1,4 +1,20 @@
+# sbt
+target/
+project/target/
+project/project/
+
+# IDE
 .idea/
 .vscode/
+.bsp/
+metals.sbt
+.metals/
+.bloop/
+
+# OS
 .DS_Store
-bin/
+
+# Class files
+*.class
+*.jar
+*.war
