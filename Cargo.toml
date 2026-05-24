@@ -1,0 +1,13 @@
+[package]
+name = "tree"
+version = "0.1.0"
+edition = "2024"
+description = "Recursively build a tree structure of Rust source files in a project directory"
+license = "MIT"
+
+[dependencies]
+syn = { version = "2", features = ["full", "parsing"] }
+
+[[example]]
+name = "example"
+path = "examples/main.rs"

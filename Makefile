@@ -1,14 +1,16 @@
 default: build
 
-workdir:
-	mkdir -p bin
+build:
+	cargo build --release
 
-build: bin/tree
+test:
+	cargo test
 
-bin/tree:
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bin/tree .
+lint:
+	cargo clippy -- -D warnings
 
-test: test-all
+fmt:
+	cargo fmt --check
 
-test-all:
-	go test -v -cover -race ./...
+example:
+	cargo run --example example

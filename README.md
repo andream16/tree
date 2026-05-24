@@ -1,59 +1,50 @@
-# tree [![CircleCI](https://circleci.com/gh/nauplio/tree.svg?style=svg)](https://circleci.com/gh/nauplio/tree) [![GoDoc](https://godoc.org/github.com/andream16/tree?status.svg)](https://godoc.org/github.com/andream16/tree) [![Go Report Card](https://goreportcard.com/badge/github.com/andream16/tree)](https://goreportcard.com/report/github.com/andream16/tree) [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
+# tree
 
-Simple go project to tree structure. It supports only go files.
+Recursively builds a tree structure of Rust source files in a project directory. Supports concurrent directory traversal and AST parsing via `syn`.
 
-# ???
+## Usage
 
-![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/structure.png)
+Add to your `Cargo.toml`:
 
+```toml
+[dependencies]
+tree = { git = "https://github.com/andream16/tree" }
 ```
-package main
 
-import (
-	"fmt"
-	"go/ast"
+### Example
 
-	"github.com/andream16/tree"
-)
+```rust
+use tree::get;
 
-func main() {
+fn main() {
+    let mut root = get("src").expect("failed to build tree");
 
-	out, err := tree.Get("examples/example", &tree.Node{})
-	if err != nil {
-		panic(err)
-	}
+    println!("{}", root.name);           // src
+    println!("{}", root.leafs[0].name);  // lib.rs
 
-	fmt.Println(out.Name)                   // example
-	fmt.Println(out.Leafs[0].Name)          // somefile.go
-	fmt.Println(out.Leafs[0].Path)          // examples/example/somefile.go
-	fmt.Println(out.Nodes[0].Name)          // example/subexample
-	fmt.Println(out.Nodes[0].Leafs[0].Name) // someotherfile.go
-	fmt.Println(out.Nodes[0].Leafs[0].Path) // examples/example/subexample/someotherfile.go
+    // Parse the AST
+    root.leafs[0].ast().expect("failed to parse");
+    if let Some(ref syntax) = root.leafs[0].syntax_tree {
+        println!("Items: {}", syntax.items.len());
+    }
 
-	err = out.Leafs[0].Ast()
-	if err != nil {
-		panic(err)
-	}
-
-	ast.Inspect(out.Leafs[0].SyntaxTree, func(n ast.Node) bool {
-		var s string
-		switch x := n.(type) {
-		case *ast.BasicLit:
-			s = x.Value
-		case *ast.Ident:
-			s = x.Name
-		}
-		if s != "" {
-			fmt.Printf("%s\n", s) // example
-		}
-		return true
-	})
-
-	// example
-	// |       somefile.go
-	// example/subexample
-	// |       someotherfile.go
-	out.Print()
-
+    // Pretty-print the tree
+    root.print();
 }
 ```
+
+## Building
+
+```sh
+make build
+```
+
+## Testing
+
+```sh
+make test
+```
+
+## License
+
+MIT
