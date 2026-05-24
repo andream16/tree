@@ -1,34 +1,20 @@
-version: 2
+version: 2.1
 jobs:
-  build:
+  test:
     docker:
-      - image: circleci/golang:1.11
-
-    environment:
-      TEST_RESULTS: /tmp/test-results
-
+      - image: cimg/python:3.12
     steps:
       - checkout
-      - run: mkdir -p $TEST_RESULTS
-
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-
       - run:
-          command: |
-            make test | tee ${TEST_RESULTS}/go-test.out
-
-      - run: make
-
-      - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
-          paths:
-            - "/go/pkg/mod"
-
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: raw-test-output
-
+          name: Install dependencies
+          command: pip install -e ".[dev]"
+      - run:
+          name: Run tests
+          command: pytest -v --tb=short --junitxml=test-results/results.xml
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
+
+workflows:
+  main:
+    jobs:
+      - test

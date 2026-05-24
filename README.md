@@ -1,59 +1,46 @@
-# tree [![CircleCI](https://circleci.com/gh/nauplio/tree.svg?style=svg)](https://circleci.com/gh/nauplio/tree) [![GoDoc](https://godoc.org/github.com/andream16/tree?status.svg)](https://godoc.org/github.com/andream16/tree) [![Go Report Card](https://goreportcard.com/badge/github.com/andream16/tree)](https://goreportcard.com/report/github.com/andream16/tree) [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
+# tree [![CircleCI](https://circleci.com/gh/andream16/tree.svg?style=svg)](https://circleci.com/gh/andream16/tree) [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
 
-Simple go project to tree structure. It supports only go files.
+Simple Python project-to-tree structure. Supports only `.py` files.
 
-# ???
+## Install
 
-![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/structure.png)
-
+```bash
+pip install -e ".[dev]"
 ```
-package main
 
-import (
-	"fmt"
-	"go/ast"
+## Usage
 
-	"github.com/andream16/tree"
-)
+```python
+import ast
 
-func main() {
+from tree import get
 
-	out, err := tree.Get("examples/example", &tree.Node{})
-	if err != nil {
-		panic(err)
-	}
+out = get("examples/example")
 
-	fmt.Println(out.Name)                   // example
-	fmt.Println(out.Leafs[0].Name)          // somefile.go
-	fmt.Println(out.Leafs[0].Path)          // examples/example/somefile.go
-	fmt.Println(out.Nodes[0].Name)          // example/subexample
-	fmt.Println(out.Nodes[0].Leafs[0].Name) // someotherfile.go
-	fmt.Println(out.Nodes[0].Leafs[0].Path) // examples/example/subexample/someotherfile.go
+print(out.name)                        # example
+print(out.leafs[0].name)               # somefile.py
+print(out.leafs[0].path)               # examples/example/somefile.py
+print(out.nodes[0].name)               # example/subexample
+print(out.nodes[0].leafs[0].name)      # someotherfile.py
+print(out.nodes[0].leafs[0].path)      # examples/example/subexample/someotherfile.py
 
-	err = out.Leafs[0].Ast()
-	if err != nil {
-		panic(err)
-	}
+out.leafs[0].ast()
 
-	ast.Inspect(out.Leafs[0].SyntaxTree, func(n ast.Node) bool {
-		var s string
-		switch x := n.(type) {
-		case *ast.BasicLit:
-			s = x.Value
-		case *ast.Ident:
-			s = x.Name
-		}
-		if s != "" {
-			fmt.Printf("%s\n", s) // example
-		}
-		return true
-	})
+for node in ast.walk(out.leafs[0].syntax_tree):
+    if isinstance(node, ast.Assign):
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                print(target.id)       # x
 
-	// example
-	// |       somefile.go
-	// example/subexample
-	// |       someotherfile.go
-	out.Print()
+# example
+# |       somefile.py
+# example/subexample
+# |       someotherfile.py
+out.print()
+```
 
-}
+## Test
+
+```bash
+make test
 ```

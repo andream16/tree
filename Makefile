@@ -1,14 +1,12 @@
-default: build
+default: test
 
-workdir:
-	mkdir -p bin
+.PHONY: install test lint
 
-build: bin/tree
+install:
+	pip install -e ".[dev]"
 
-bin/tree:
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bin/tree .
+test:
+	pytest -v --tb=short
 
-test: test-all
-
-test-all:
-	go test -v -cover -race ./...
+lint:
+	python -m py_compile src/tree/tree.py
