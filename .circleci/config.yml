@@ -2,33 +2,25 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.11
-
-    environment:
-      TEST_RESULTS: /tmp/test-results
+      - image: cimg/ruby:3.2
 
     steps:
       - checkout
-      - run: mkdir -p $TEST_RESULTS
 
       - restore_cache:
           keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
+            - bundle-v1-{{ checksum "Gemfile.lock" }}
+            - bundle-v1-
 
       - run:
-          command: |
-            make test | tee ${TEST_RESULTS}/go-test.out
-
-      - run: make
+          name: Install dependencies
+          command: bundle install --path vendor/bundle
 
       - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
+          key: bundle-v1-{{ checksum "Gemfile.lock" }}
           paths:
-            - "/go/pkg/mod"
+            - vendor/bundle
 
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: raw-test-output
-
-      - store_test_results:
-          path: /tmp/test-results
+      - run:
+          name: Run tests
+          command: bundle exec rspec --format documentation

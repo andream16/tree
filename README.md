@@ -1,59 +1,47 @@
-# tree [![CircleCI](https://circleci.com/gh/nauplio/tree.svg?style=svg)](https://circleci.com/gh/nauplio/tree) [![GoDoc](https://godoc.org/github.com/andream16/tree?status.svg)](https://godoc.org/github.com/andream16/tree) [![Go Report Card](https://goreportcard.com/badge/github.com/andream16/tree)](https://goreportcard.com/report/github.com/andream16/tree) [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
+# tree [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andream16/tree/master/LICENSE)
 
-Simple go project to tree structure. It supports only go files.
+Simple Ruby project to tree structure. It supports only Ruby files.
 
-# ???
+## Installation
 
-![alt text](https://raw.githubusercontent.com/AndreaM16/tree/master/assets/structure.png)
+Add to your Gemfile:
+
+```ruby
+gem "tree", git: "https://github.com/andream16/tree.git"
+```
+
+Then run `bundle install`.
+
+## Usage
+
+```ruby
+require "tree"
+
+node = Tree::Node.new
+result = Tree.get("examples/example", node)
+
+puts result.name                   # example
+puts result.leafs[0].name          # somefile.rb
+puts result.leafs[0].path          # examples/example/somefile.rb
+puts result.nodes[0].name          # subexample
+puts result.nodes[0].leafs[0].name # someotherfile.rb
+puts result.nodes[0].leafs[0].path # examples/example/subexample/someotherfile.rb
+
+# Parse AST for a leaf
+result.leafs[0].ast
+puts result.leafs[0].syntax_tree   # (module (const nil :Example) nil)
+
+# Pretty print the tree
+result.print
+# example
+# |	somefile.rb
+# subexample
+# |	someotherfile.rb
+```
+
+## Testing
 
 ```
-package main
-
-import (
-	"fmt"
-	"go/ast"
-
-	"github.com/andream16/tree"
-)
-
-func main() {
-
-	out, err := tree.Get("examples/example", &tree.Node{})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(out.Name)                   // example
-	fmt.Println(out.Leafs[0].Name)          // somefile.go
-	fmt.Println(out.Leafs[0].Path)          // examples/example/somefile.go
-	fmt.Println(out.Nodes[0].Name)          // example/subexample
-	fmt.Println(out.Nodes[0].Leafs[0].Name) // someotherfile.go
-	fmt.Println(out.Nodes[0].Leafs[0].Path) // examples/example/subexample/someotherfile.go
-
-	err = out.Leafs[0].Ast()
-	if err != nil {
-		panic(err)
-	}
-
-	ast.Inspect(out.Leafs[0].SyntaxTree, func(n ast.Node) bool {
-		var s string
-		switch x := n.(type) {
-		case *ast.BasicLit:
-			s = x.Value
-		case *ast.Ident:
-			s = x.Name
-		}
-		if s != "" {
-			fmt.Printf("%s\n", s) // example
-		}
-		return true
-	})
-
-	// example
-	// |       somefile.go
-	// example/subexample
-	// |       someotherfile.go
-	out.Print()
-
-}
+make install
+make test
 ```
